@@ -30,3 +30,30 @@ def contour_detection(image_path):
     # 8. 返回绘制后的图像和轮廓列表。
     # 9. 使用 try...except 处理异常。
     pass 
+    try:
+        # 读取图像
+        img = cv2.imread(image_path)
+        # 检查图像是否成功读取
+        if img is None:
+            return None, None
+        # 转换为灰度图
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # 二值化处理
+        ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+        # 检测轮廓
+        if cv2.__version__.startswith('3.'):
+            _, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        else:
+            contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        # 确保 contours 是列表类型
+        if not isinstance(contours, list):
+            contours = list(contours)
+        # 创建图像副本用于绘制
+        img_copy = img.copy()
+        # 绘制轮廓
+        cv2.drawContours(img_copy, contours, -1, (0, 255, 0), 2)
+        # 返回绘制后的图像和轮廓列表
+        return img_copy, contours
+    except Exception as e:
+        print(f"发生异常: {e}")
+        return None, None
